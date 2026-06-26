@@ -1,0 +1,108 @@
+Metadata-Version: 2.4
+Name: msg_split
+Version: 0.1.0
+Summary: Telegram conversation log splitter
+Author-email: Assistant <assistant@example.com>
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: pytest>=7.0.0
+
+# MSG_SPLIT
+
+## DESCRIPCION
+
+esta aplicación se define como un motor de orquestación cronológica y análisis de logs, diseñado para convertir flujos de datos asíncronos en una base de conocimientos 
+estructurada.
+
+La aplicación opera bajo un paradigma de procesamiento incremental y persistente, garantizando que cada registro sea procesado exactamente una vez. Su arquitectura se divide en 
+cuatro capas funcionales:
+
+
+## CAPAS
+
+### 1. Capa de Ingesta y Recuperación (Idempotente)
+
+
+
+La aplicación comienza realizando una lectura del estado previo (el archivo conversaciones.jsonl).
+
+
+
+Puntero de Tiempo: Extrae el end_time de la última entrada procesada. Este valor actúa como su "frontera de procesamiento".
+
+
+
+Filtro Selectivo: Al escanear el log de Telegram, el motor ignora todo mensaje con un datetime anterior o igual al puntero de tiempo guardado. Esto evita la redundancia y asegura que el sistema sea eficiente, sin importar cuántas veces se ejecute o qué tan grande sea el histórico.
+
+### 2. Capa de Segmentación Dinámica (Lógica Difusa)
+
+
+
+El núcleo de la inteligencia de la aplicación es su motor de segmentación.
+
+
+
+Cálculo Adaptativo: No utiliza un umbral fijo. Calcula la mediana de los intervalos de tiempo entre mensajes consecutivos en el nuevo bloque de datos y suma una desviación estándar (o un factor multiplicador) para establecer el "límite de conversación".
+
+
+
+Clustering Temporal: Los mensajes se agrupan en objetos Conversación solo si el $\Delta t$ entre ellos es inferior al umbral. Si el $\Delta t$ es superior, la conversación actual se cierra y se inicia una nueva.
+
+
+
+### 3. Capa de Persistencia y Estructuración (Formato JSONL)
+
+
+
+La aplicación utiliza un formato de JSON por línea para asegurar la integridad de los datos.
+
+
+
+ Autosuficiencia: Cada objeto en el jsonl contiene metadatos completos (conversation_id, participantes, marcas temporales y contenido).
+
+
+
+ Escalabilidad: Al ser un archivo de solo adición (append-only), la aplicación nunca necesita cargar el archivo completo en la memoria RAM.Simplemente "apendea" las nuevas conversaciones detectadas al final del archivo.
+
+
+
+### 4. Capa de Análisis y Resumen (Extensible)
+
+
+
+El diseño permite que, una vez segmentada la conversación, un módulo de análisis (opcionalmente un LLM) procese el campo raw_content para generar un summary.
+
+
+
+Procesamiento en Batch: Ud. puede decidir si el resumen se genera en tiempo real al finalizar la segmentación o como una tarea de fondo (background task) para no bloquear la ingesta.
+
+
+
+## Resumen del Flujo de Datos
+
+
+
+Estado: Leer conversaciones.jsonl -> Obtener último end_time.
+
+
+
+Filtrado: Leer Telegram -> Extraer mensajes donde msg.datetime > end_time.
+
+
+
+Análisis: Calcular estadísticamente el umbral de separación actual.
+
+
+
+Segmentación: Agrupar mensajes en nuevas conversaciones.
+
+
+
+Persistencia: Escribir nuevas conversaciones en el archivo jsonl.
+
+
+
+Es, en esencia, un sistema de gestión de memoria a largo plazo para comunicaciones de telegram

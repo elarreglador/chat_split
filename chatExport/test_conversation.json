@@ -1,0 +1,36 @@
+{
+  "name": "Test Chat Export",
+  "type": "basic_group",
+  "messages": [
+    {
+      "id": 1,
+      "date": "2023-01-01T10:00:00Z",
+      "from": "User1",
+      "text": "Hello everyone!"
+    },
+    {
+      "id": 2,
+      "date": "2023-01-01T10:02:00Z",
+      "from": "User2",
+      "text": "Hi User1!"
+    },
+    {
+      "id": 3,
+      "date": "2023-01-01T10:05:00Z",
+      "from": "User1",
+      "text": "How are you?"
+    },
+    {
+      "id": 4,
+      "date": "2023-01-01T12:00:00Z",
+      "from": "User3",
+      "text": "Hey there!"
+    },
+    {
+      "id": 5,
+      "date": "2023-01-01T12:05:00Z",
+      "from": "User4",
+      "text": "What's up?"
+    }
+  ]
+}
