@@ -1,0 +1,6 @@
+node_modules/
+src/__pycache__/
+src/models.py~
+src/segmenter.py~
+src/main.py~
+.DS_Store
